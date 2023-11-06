@@ -1,0 +1,32 @@
+﻿<Window x:Class="Yachthafen_Buchung.LogInScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yachthafen_Buchung"
+        mc:Ignorable="d"
+        Title="LogInScreen" Height="250" Width="405" Background="#FF262626">
+    <Window.Resources>
+        <Style x:Key="CustomButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <TextBox HorizontalAlignment="Center" Margin="0,30,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <PasswordBox HorizontalAlignment="Center" VerticalAlignment="Top" Width="120" Margin="0,60,0,0"/>
+
+
+        <Button Content="Log In" Style="{StaticResource CustomButtonStyle}" BorderBrush="#FF399A56" Background="#FF212B24" Foreground="#FFDADADA" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,117,0,0" Click="LoginButton_Click" FontSize="18" MouseEnter="CustomButton_MouseEnter" MouseLeave="CustomButton_MouseLeave" Width="120" />
+
+    </Grid>
+</Window>
