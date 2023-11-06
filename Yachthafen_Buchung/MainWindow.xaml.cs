@@ -11,17 +11,18 @@ namespace Yachthafen_Buchung
 {
     public partial class MainWindow : Window
     {
+        public string ConnectionString { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            ConnectionString = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=Yachthafen;Integrated Security=True;Trust Server Certificate=True";
             PopulateStackPanels();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         private void PopulateStackPanels()
         {
-            string connectionString = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=Yachthafen;Integrated Security=True;Trust Server Certificate=True";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 string query = "SELECT DockID, Dockname, Status, Betreiber, Verantwortlicher FROM Dock";

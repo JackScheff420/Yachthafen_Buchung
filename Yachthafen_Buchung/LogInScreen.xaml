@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yachthafen_Buchung"
         mc:Ignorable="d"
-        Title="LogInScreen" Height="250" Width="405" Background="#FF262626">
+        Title="LogInScreen" Height="500" Width="810" Background="#FF262626" RenderTransformOrigin="0.5,0.5">
     <Window.Resources>
         <Style x:Key="CustomButtonStyle" TargetType="Button">
             <Setter Property="Template">
@@ -21,12 +21,13 @@
             </Setter>
         </Style>
     </Window.Resources>
+
     <Grid>
-        <TextBox HorizontalAlignment="Center" Margin="0,30,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <PasswordBox HorizontalAlignment="Center" VerticalAlignment="Top" Width="120" Margin="0,60,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Margin="90,60,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" Foreground="White" FontSize="24"/>
+        <TextBox Name="UsernameTextBox" HorizontalAlignment="Center" Margin="0,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="32" FontSize="24" KeyDown="login_KeyDown"/>
+        <TextBlock HorizontalAlignment="Left" Margin="90,120,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Foreground="White" Height="50" FontSize="24"/>
+        <PasswordBox Name="PasswordBox" HorizontalAlignment="Center" VerticalAlignment="Top" Width="240" Margin="0,120,0,0" Height="32" FontSize="24" KeyDown="login_KeyDown"/>
 
-
-        <Button Content="Log In" Style="{StaticResource CustomButtonStyle}" BorderBrush="#FF399A56" Background="#FF212B24" Foreground="#FFDADADA" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,117,0,0" Click="LoginButton_Click" FontSize="18" MouseEnter="CustomButton_MouseEnter" MouseLeave="CustomButton_MouseLeave" Width="120" />
-
+        <Button Content="Log In" Style="{StaticResource CustomButtonStyle}" BorderBrush="#FF399A56" Background="#FF212B24" Foreground="#FFDADADA" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,234,0,0" Click="LoginButton_Click" FontSize="36" MouseEnter="CustomButton_MouseEnter" MouseLeave="CustomButton_MouseLeave" Width="240" Height="50" />
     </Grid>
 </Window>
