@@ -32,13 +32,13 @@ namespace Yachthafen_Buchung
             string enteredUsername = UsernameTextBox.Text;
             string enteredPassword = PasswordBox.Password;
 
-            MainWindow main = new MainWindow();
+            MainWindow main = new MainWindow(false);
             string connectionString = main.ConnectionString;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT Benutzername, Passwort FROM Benutzer WHERE Benutzername = @Username AND Passwort = @Password";
+                string query = "SELECT Benutzername, Passwort, IstAdmin FROM Benutzer WHERE Benutzername = @Username AND Passwort = @Password";
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
                     cmd.Parameters.AddWithValue("@Username", enteredUsername);
@@ -48,10 +48,14 @@ namespace Yachthafen_Buchung
                     {
                         if (reader.HasRows)
                         {
-                            
-                            main.Username = enteredUsername;
-                            main.Show();
-                            this.Close();
+                            while (reader.Read())
+                            {
+                                bool IsAdmin = Convert.ToBoolean(reader["IstAdmin"]);
+                                main.Close();
+                                MainWindow newMain = new MainWindow(IsAdmin);
+                                newMain.Show();
+                                this.Close();
+                            }
                         }
                         else
                         {
@@ -61,6 +65,7 @@ namespace Yachthafen_Buchung
                 }
             }
         }
+
 
         private void CustomButton_MouseEnter(object sender, MouseEventArgs e)
         {

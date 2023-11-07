@@ -12,16 +12,18 @@ namespace Yachthafen_Buchung
     public partial class MainWindow : Window
     {
         public string ConnectionString { get; set; }
-        public string Username { get; set; }
-        public MainWindow()
+        public bool IsAdmin { get; set; }
+
+        public MainWindow(bool isAdmin)
         {
             InitializeComponent();
             ConnectionString = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=Yachthafen;Integrated Security=True;Trust Server Certificate=True";
+            IsAdmin = isAdmin;
             PopulateStackPanels();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        private void PopulateStackPanels()
+        public void PopulateStackPanels()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
@@ -135,16 +137,25 @@ namespace Yachthafen_Buchung
                             Style = (Style)FindResource("CustomButtonStyle")
                         };
 
+                        if (liegeplatzStatus == 0 && IsAdmin == false)
+                        {
+                            button.IsEnabled = false;
+                            button.Content = "ausgebucht";
+                            button.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 30, 30));
+                            button.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(126, 126, 126));
+                        }
+
                         button.MouseEnter += (sender, e) =>
                         {
-                            button.BorderBrush = liegeplatzStatus == 1 ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(68, 207, 110)) : new SolidColorBrush(System.Windows.Media.Color.FromRgb(234, 67, 72));
-                            button.BorderThickness = new Thickness(2);
+                                button.BorderBrush = liegeplatzStatus == 1 ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(68, 207, 110)) : new SolidColorBrush(System.Windows.Media.Color.FromRgb(234, 67, 72));
+                                button.BorderThickness = new Thickness(2);
                         };
 
                         button.MouseLeave += (sender, e) =>
-                        {
-                            button.BorderBrush = liegeplatzStatus == 1 ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(57, 154, 86)) : new SolidColorBrush(System.Windows.Media.Color.FromRgb(250, 70, 76));
-                            button.BorderThickness = new Thickness(1);
+                        { 
+                                button.BorderBrush = liegeplatzStatus == 1 ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(57, 154, 86)) : new SolidColorBrush(System.Windows.Media.Color.FromRgb(250, 70, 76));
+                                button.BorderThickness = new Thickness(1);
+
                         };
 
                         button.Click += (sender, e) =>
@@ -171,12 +182,8 @@ namespace Yachthafen_Buchung
                                     }
                                     PopulateButtons(buttonStackPanelLinks, buttonStackPanelRechts, dockID);
                                 }
-                                else
-                                {
-
-                                }
                             }
-                            else if(liegeplatzStatus == 0 && IsUserAdmin(Username) == true)
+                            else if (liegeplatzStatus == 0 && IsAdmin == true)
                             {
                                 PopUp stornierenWindow = new PopUp();
                                 stornierenWindow.Owner = this;
@@ -197,14 +204,9 @@ namespace Yachthafen_Buchung
                                         updateCommand.ExecuteNonQuery();
                                     }
                                     PopulateButtons(buttonStackPanelLinks, buttonStackPanelRechts, dockID);
-                                }   
-                            }
-                            else
-                            {
-                                MessageBox.Show("du kommst hier nicht rein");
+                                }
                             }
                         };
-                       
 
                         StackPanel buttonPanel = new StackPanel
                         {
@@ -226,26 +228,6 @@ namespace Yachthafen_Buchung
                     }
                 }
             }
-        }
-        private bool IsUserAdmin(string username)
-        {
-            string adminCheckQuery = "SELECT IstAdmin FROM Benutzer WHERE Benutzername = @Username";
-
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
-            using (SqlCommand cmd = new SqlCommand(adminCheckQuery, connection))
-            {
-                cmd.Parameters.AddWithValue("@Username", username);
-                connection.Open();
-
-                object isAdmin = cmd.ExecuteScalar();
-
-                if (isAdmin != null && isAdmin != DBNull.Value)
-                {
-                    return Convert.ToBoolean(isAdmin);
-                }
-            }
-
-            return false;
         }
     }
 }
