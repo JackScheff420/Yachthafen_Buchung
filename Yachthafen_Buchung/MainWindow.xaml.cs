@@ -12,6 +12,7 @@ namespace Yachthafen_Buchung
     public partial class MainWindow : Window
     {
         public string ConnectionString { get; set; }
+        public string Username { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -175,7 +176,7 @@ namespace Yachthafen_Buchung
 
                                 }
                             }
-                            else
+                            else if(liegeplatzStatus == 0 && IsUserAdmin(Username) == true)
                             {
                                 PopUp stornierenWindow = new PopUp();
                                 stornierenWindow.Owner = this;
@@ -196,11 +197,11 @@ namespace Yachthafen_Buchung
                                         updateCommand.ExecuteNonQuery();
                                     }
                                     PopulateButtons(buttonStackPanelLinks, buttonStackPanelRechts, dockID);
-                                }
-                                else
-                                {
-
-                                }
+                                }   
+                            }
+                            else
+                            {
+                                MessageBox.Show("du kommst hier nicht rein");
                             }
                         };
                        
@@ -225,6 +226,26 @@ namespace Yachthafen_Buchung
                     }
                 }
             }
+        }
+        private bool IsUserAdmin(string username)
+        {
+            string adminCheckQuery = "SELECT IstAdmin FROM Benutzer WHERE Benutzername = @Username";
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            using (SqlCommand cmd = new SqlCommand(adminCheckQuery, connection))
+            {
+                cmd.Parameters.AddWithValue("@Username", username);
+                connection.Open();
+
+                object isAdmin = cmd.ExecuteScalar();
+
+                if (isAdmin != null && isAdmin != DBNull.Value)
+                {
+                    return Convert.ToBoolean(isAdmin);
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -32,8 +32,8 @@ namespace Yachthafen_Buchung
             string enteredUsername = UsernameTextBox.Text;
             string enteredPassword = PasswordBox.Password;
 
-            MainWindow mainWindow = new MainWindow();
-            string connectionString = mainWindow.ConnectionString;
+            MainWindow main = new MainWindow();
+            string connectionString = main.ConnectionString;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -48,7 +48,8 @@ namespace Yachthafen_Buchung
                     {
                         if (reader.HasRows)
                         {
-                            MainWindow main = new MainWindow();
+                            
+                            main.Username = enteredUsername;
                             main.Show();
                             this.Close();
                         }
