@@ -28,6 +28,6 @@
         <TextBlock HorizontalAlignment="Left" Margin="90,120,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Foreground="White" Height="50" FontSize="24"/>
         <PasswordBox Name="PasswordBox" HorizontalAlignment="Center" VerticalAlignment="Top" Width="240" Margin="0,120,0,0" Height="32" FontSize="24" KeyDown="login_KeyDown"/>
 
-        <Button Content="Log In" Style="{StaticResource CustomButtonStyle}" BorderBrush="#FF399A56" Background="#FF212B24" Foreground="#FFDADADA" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,234,0,0" Click="LoginButton_Click" FontSize="36" MouseEnter="CustomButton_MouseEnter" MouseLeave="CustomButton_MouseLeave" Width="240" Height="50" />
+        <Button Name="LogInButton" Content="Log In" Style="{StaticResource CustomButtonStyle}" BorderBrush="#FF399A56" Background="#FF212B24" Foreground="#FFDADADA" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,234,0,0" Click="LoginButton_Click" FontSize="36" MouseEnter="CustomButton_MouseEnter" MouseLeave="CustomButton_MouseLeave" Width="240" Height="50" />
     </Grid>
 </Window>

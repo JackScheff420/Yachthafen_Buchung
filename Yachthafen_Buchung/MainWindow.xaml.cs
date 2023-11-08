@@ -14,16 +14,39 @@ namespace Yachthafen_Buchung
         public string ConnectionString { get; set; }
         public bool IsAdmin { get; set; }
 
-        public MainWindow(bool isAdmin)
+        public string UserName { get; set; }
+
+        public MainWindow(string currentUser, string connectionString)
         {
             InitializeComponent();
-            ConnectionString = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=Yachthafen;Integrated Security=True;Trust Server Certificate=True";
-            IsAdmin = isAdmin;
+            ConnectionString = connectionString;
+            UserName = currentUser;
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                string query = "SELECT IstAdmin FROM Benutzer WHERE Benutzername = @Benutzername";
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@Benutzername", UserName);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                IsAdmin = Convert.ToBoolean(reader["IstAdmin"]);
+                            }
+                        }
+                    }
+                }
+            }
+
             PopulateStackPanels();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        public void PopulateStackPanels()
+        private void PopulateStackPanels()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
@@ -101,7 +124,7 @@ namespace Yachthafen_Buchung
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT DockID, LiegeplatzID, Liegeplatzstatus, Liegeplatzgröße, Liegeplatztyp, Preis, MaximaleBootslänge, MaximaleBootsbreite FROM Liegeplatz WHERE DockID = @DockID";
+                string query = "SELECT DockID, LiegeplatzID, Liegeplatzstatus, Liegeplatzgröße, Liegeplatztyp, Preis, MaximaleBootslänge, MaximaleBootsbreite, Bucher FROM Liegeplatz WHERE DockID = @DockID";
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
                     cmd.Parameters.AddWithValue("@DockID", dockID);
@@ -118,6 +141,7 @@ namespace Yachthafen_Buchung
                         int preis = Convert.ToInt32(row["Preis"]);
                         decimal maximaleBootslänge = Convert.ToDecimal(row["MaximaleBootslänge"]);
                         decimal maximaleBootsbreite = Convert.ToDecimal(row["MaximaleBootsbreite"]);
+                        string bucher = Convert.ToString(row["Bucher"]);
 
                         Button button = new Button
                         {
@@ -171,12 +195,13 @@ namespace Yachthafen_Buchung
 
                                 if (dialogResult == true)
                                 {
-                                    string updateQuery = "UPDATE Liegeplatz SET Liegeplatzstatus = 0 WHERE DockID = @DockID AND LiegeplatzID = @LiegeplatzID";
+                                    string updateQuery = "UPDATE Liegeplatz SET Liegeplatzstatus = 0, Bucher = @user WHERE DockID = @DockID AND LiegeplatzID = @LiegeplatzID";
                                     using (SqlConnection updateConnection = new SqlConnection(connectionString))
                                     using (SqlCommand updateCommand = new SqlCommand(updateQuery, updateConnection))
                                     {
                                         updateCommand.Parameters.AddWithValue("@DockID", dockID);
                                         updateCommand.Parameters.AddWithValue("@LiegeplatzID", liegeplatzID);
+                                        updateCommand.Parameters.AddWithValue("@user", UserName);
                                         updateConnection.Open();
                                         updateCommand.ExecuteNonQuery();
                                     }
@@ -194,7 +219,7 @@ namespace Yachthafen_Buchung
 
                                 if (dialogResult == true)
                                 {
-                                    string updateQuery = "UPDATE Liegeplatz SET Liegeplatzstatus = 1 WHERE DockID = @DockID AND LiegeplatzID = @LiegeplatzID";
+                                    string updateQuery = "UPDATE Liegeplatz SET Liegeplatzstatus = 1, Bucher = NULL WHERE DockID = @DockID AND LiegeplatzID = @LiegeplatzID";
                                     using (SqlConnection updateConnection = new SqlConnection(connectionString))
                                     using (SqlCommand updateCommand = new SqlCommand(updateQuery, updateConnection))
                                     {

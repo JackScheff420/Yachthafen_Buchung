@@ -21,21 +21,21 @@ namespace Yachthafen_Buchung
     /// </summary>
     public partial class LogInScreen : Window
     {
+        public string ConnectionString { get; set; }
         public LogInScreen()
         {
             InitializeComponent();
+            ConnectionString = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=Yachthafen;Integrated Security=True;Trust Server Certificate=True";
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string enteredUsername = UsernameTextBox.Text;
             string enteredPassword = PasswordBox.Password;
 
-            MainWindow main = new MainWindow(false);
-            string connectionString = main.ConnectionString;
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 string query = "SELECT Benutzername, Passwort, IstAdmin FROM Benutzer WHERE Benutzername = @Username AND Passwort = @Password";
@@ -51,21 +51,29 @@ namespace Yachthafen_Buchung
                             while (reader.Read())
                             {
                                 bool IsAdmin = Convert.ToBoolean(reader["IstAdmin"]);
-                                main.Close();
-                                MainWindow newMain = new MainWindow(IsAdmin);
+                                string currentUser = Convert.ToString(reader["Benutzername"]);
+                                MainWindow newMain = new MainWindow(currentUser, ConnectionString);
                                 newMain.Show();
                                 this.Close();
                             }
                         }
                         else
                         {
-                            MessageBox.Show("Ungültiger Benutzername oder Passwort.");
+                            for (int i = 0; i < 5; i++)
+                            {
+                                LogInButton.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(250, 70, 76));
+                                LogInButton.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(46, 33, 33));
+                                await Task.Delay(100);
+
+                                LogInButton.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(57, 154, 86));
+                                LogInButton.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(33, 43, 36));
+                                await Task.Delay(100);
+                            }
                         }
                     }
                 }
             }
         }
-
 
         private void CustomButton_MouseEnter(object sender, MouseEventArgs e)
         {
