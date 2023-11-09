@@ -5,3 +5,5 @@ Nutzer für die Datenbank ist der service Nutzer (dieser muss möglicherweise er
 name: service
 passwort: service
 
+Zum einspielen der BacPac Datei der Datenbank:
+https://learn.microsoft.com/de-de/sql/relational-databases/data-tier-applications/import-a-bacpac-file-to-create-a-new-user-database?view=sql-server-ver16
