@@ -50,7 +50,6 @@ namespace Yachthafen_Buchung
                         {
                             while (reader.Read())
                             {
-                                bool IsAdmin = Convert.ToBoolean(reader["IstAdmin"]);
                                 string currentUser = Convert.ToString(reader["Benutzername"]);
                                 MainWindow newMain = new MainWindow(currentUser, ConnectionString);
                                 newMain.Show();

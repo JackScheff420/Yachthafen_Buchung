@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yachthafen_Buchung"
         mc:Ignorable="d"
-        Title="LogInScreen" Height="500" Width="810" Background="#FF262626" RenderTransformOrigin="0.5,0.5">
+        Title="LogInScreen" Height="500" Width="810" Background="#FF262626" RenderTransformOrigin="0.5,0.5" Icon="/schiff.png">
     <Window.Resources>
         <Style x:Key="CustomButtonStyle" TargetType="Button">
             <Setter Property="Template">

@@ -14,20 +14,20 @@ namespace Yachthafen_Buchung
         public string ConnectionString { get; set; }
         public bool IsAdmin { get; set; }
 
-        public string UserName { get; set; }
+        public string CurrentUser { get; set; }
 
         public MainWindow(string currentUser, string connectionString)
         {
             InitializeComponent();
             ConnectionString = connectionString;
-            UserName = currentUser;
+            CurrentUser = currentUser;
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 string query = "SELECT IstAdmin FROM Benutzer WHERE Benutzername = @Benutzername";
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
-                    cmd.Parameters.AddWithValue("@Benutzername", UserName);
+                    cmd.Parameters.AddWithValue("@Benutzername", CurrentUser);
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -120,8 +120,7 @@ namespace Yachthafen_Buchung
         {
             buttonStackPanelLinks.Children.Clear();
             buttonStackPanelRechts.Children.Clear();
-            string connectionString = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=Yachthafen;Integrated Security=True;Trust Server Certificate=True";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 string query = "SELECT DockID, LiegeplatzID, Liegeplatzstatus, Liegeplatzgröße, Liegeplatztyp, Preis, MaximaleBootslänge, MaximaleBootsbreite, Bucher FROM Liegeplatz WHERE DockID = @DockID";
@@ -142,6 +141,7 @@ namespace Yachthafen_Buchung
                         decimal maximaleBootslänge = Convert.ToDecimal(row["MaximaleBootslänge"]);
                         decimal maximaleBootsbreite = Convert.ToDecimal(row["MaximaleBootsbreite"]);
                         string bucher = Convert.ToString(row["Bucher"]);
+                        bool userHasBooked = (bucher == CurrentUser);
 
                         Button button = new Button
                         {
@@ -161,14 +161,21 @@ namespace Yachthafen_Buchung
                             Style = (Style)FindResource("CustomButtonStyle")
                         };
 
-                        if (liegeplatzStatus == 0 && IsAdmin == false)
+                        if (liegeplatzStatus == 0 && (IsAdmin == false || userHasBooked))
                         {
                             button.IsEnabled = false;
                             button.Content = "ausgebucht";
                             button.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 30, 30));
                             button.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(126, 126, 126));
                         }
-
+                        if (userHasBooked)
+                        {
+                            button.IsEnabled = true;
+                            button.Content = $"{dockID}{liegeplatzID} Stornieren";
+                            button.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(46, 33, 33));
+                            button.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(250, 70, 76));
+                        }
+                        
                         button.MouseEnter += (sender, e) =>
                         {
                                 button.BorderBrush = liegeplatzStatus == 1 ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(68, 207, 110)) : new SolidColorBrush(System.Windows.Media.Color.FromRgb(234, 67, 72));
@@ -184,7 +191,7 @@ namespace Yachthafen_Buchung
 
                         button.Click += (sender, e) =>
                         {
-                            if (liegeplatzStatus == 1)
+                            if (liegeplatzStatus == 1 && userHasBooked == false)
                             {
                                 PopUp buchenWindow = new PopUp();
                                 buchenWindow.Owner = this;
@@ -196,19 +203,19 @@ namespace Yachthafen_Buchung
                                 if (dialogResult == true)
                                 {
                                     string updateQuery = "UPDATE Liegeplatz SET Liegeplatzstatus = 0, Bucher = @user WHERE DockID = @DockID AND LiegeplatzID = @LiegeplatzID";
-                                    using (SqlConnection updateConnection = new SqlConnection(connectionString))
+                                    using (SqlConnection updateConnection = new SqlConnection(ConnectionString))
                                     using (SqlCommand updateCommand = new SqlCommand(updateQuery, updateConnection))
                                     {
                                         updateCommand.Parameters.AddWithValue("@DockID", dockID);
                                         updateCommand.Parameters.AddWithValue("@LiegeplatzID", liegeplatzID);
-                                        updateCommand.Parameters.AddWithValue("@user", UserName);
+                                        updateCommand.Parameters.AddWithValue("@user", CurrentUser);
                                         updateConnection.Open();
                                         updateCommand.ExecuteNonQuery();
                                     }
                                     PopulateButtons(buttonStackPanelLinks, buttonStackPanelRechts, dockID);
                                 }
                             }
-                            else if (liegeplatzStatus == 0 && IsAdmin == true)
+                            else if (liegeplatzStatus == 0 && IsAdmin == true || liegeplatzStatus == 0 && bucher == CurrentUser)
                             {
                                 PopUp stornierenWindow = new PopUp();
                                 stornierenWindow.Owner = this;
@@ -220,7 +227,7 @@ namespace Yachthafen_Buchung
                                 if (dialogResult == true)
                                 {
                                     string updateQuery = "UPDATE Liegeplatz SET Liegeplatzstatus = 1, Bucher = NULL WHERE DockID = @DockID AND LiegeplatzID = @LiegeplatzID";
-                                    using (SqlConnection updateConnection = new SqlConnection(connectionString))
+                                    using (SqlConnection updateConnection = new SqlConnection(ConnectionString))
                                     using (SqlCommand updateCommand = new SqlCommand(updateQuery, updateConnection))
                                     {
                                         updateCommand.Parameters.AddWithValue("@DockID", dockID);

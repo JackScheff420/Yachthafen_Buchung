@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yachthafen_Buchung"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FF44CF6E">
+        Title="Yachthafen" Height="450" Width="800" Background="#FF44CF6E" Icon="/schiff.png">
 
     <Grid x:Name="MainGrid" Background="#FF262626">
         <Label x:Name="Titel" Content="Yachthafen Buchung und Verwaltung 🚢" HorizontalAlignment="Center" Margin="0,23,0,0" VerticalAlignment="Top" Background="#FF1E1E1E" BorderBrush="#FF7E7E7E" Foreground="#FFDADADA" BorderThickness="1,1,1,1" FontWeight="Bold" FontSize="24"/>
